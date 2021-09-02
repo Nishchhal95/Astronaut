@@ -1,0 +1,33 @@
+{
+    "name": "MainMenuInputAction",
+    "maps": [
+        {
+            "name": "MainMenu",
+            "id": "260807b0-644d-4d72-8581-5617debd02bd",
+            "actions": [
+                {
+                    "name": "LoadGame",
+                    "type": "Button",
+                    "id": "42a29848-e537-495f-84ab-e75407b9793a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "35550969-2804-47d6-a680-3f9bb2847305",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LoadGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
