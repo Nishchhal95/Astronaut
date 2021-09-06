@@ -21,8 +21,8 @@ public class PlayerManager : MonoBehaviour
         cameraMainTransform = Camera.main.transform;
         playerControllers.Add(new PlayerMovementController(this.transform, cameraMainTransform, 
             controller, movementControl, jumpControl, gravityControl, new PlayerSettings(2.0f, 1.0f, -9.81f, 4f)));
-        playerControllers.Add(new PlayerInteractionController(this.transform, cameraMainTransform, 
-            1.5f, 90f, whatIsInteractable));
+        //playerControllers.Add(new PlayerInteractionController(this.transform, cameraMainTransform, 
+        //    1.5f, 90f, whatIsInteractable));
         //playerControllers.Add(new PlayerAnimationController(movementControl, jumpControl, myAnimator, controller));
 
         Cursor.lockState = CursorLockMode.Locked;

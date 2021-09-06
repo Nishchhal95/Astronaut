@@ -1,61 +1,78 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInteractionController : IPlayerController
+public class PlayerInteractionController : MonoBehaviour
 {
-    private float interactionRadius = 3f;
-    private Transform transform;
-    private Transform cameraTransform;
-    private LayerMask whatIsInteractable;
-    private float totalFOV = 90.0f;
+    [SerializeField] private Vector3 interactionBoxSize = new Vector3(3, 3, 3);
+    [SerializeField] private bool debugMode = false;
+    [SerializeField] private LayerMask whatIsInteractable;
+    [SerializeField] private GameObject interactableGO;
+    [SerializeField] private IInteractable interactable;
+    [SerializeField] private IInteractable lastInteractable;
+    [SerializeField] private string interactionKey = "Q";
 
-    public PlayerInteractionController(Transform _transform, Transform _cameraTransform, float _interactionRadius, float _totalFOV, LayerMask _whatIsInteractable)
+    private void Update()
     {
-        transform = _transform;
-        cameraTransform = _cameraTransform;
-        interactionRadius = _interactionRadius;
-        totalFOV = _totalFOV;
-        whatIsInteractable = _whatIsInteractable;
+        CheckAndUpdateNearbyInteractable();
     }
 
-    public void Update()
+    private void CheckAndUpdateNearbyInteractable()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, interactionRadius, whatIsInteractable);
-        for (int i = 0; i < colliders.Length; i++)
+        if(interactable == null)
         {
-            Transform interactableObject = colliders[i].transform;
-            Vector3 ditToObject = (interactableObject.position - transform.position).normalized;
-            if(Vector3.Angle(transform.forward, ditToObject) < totalFOV / 2)
-            {
-                Debug.Log("I HIT SOMETHING " + i);
-            }
+            lastInteractable = interactable;
+            InteractableToolTipManager.onInteractableOutOfRange?.Invoke();
+        }
+        interactable = GetInteractableNearby();
+        //Debug.Log("Interactable " + (interactable == null ? " NULL " : "SOMETHING"));
+
+        if(interactable != null && interactable != lastInteractable)
+        {
+            InteractableToolTipManager.onInteractableInRange?.Invoke(interactableGO, interactionKey);
         }
     }
 
-    //NOT SURE IF WE NEED THIS FOV THING
-    public void OnDrawGizmos()
+    private IInteractable GetInteractableNearby()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, interactionRadius);
+        IInteractable interactable = null;
+        BoxCastInfo boxCastInfo = FireAndGetBoxCastInfo();
+        if (boxCastInfo.hit && boxCastInfo.hitInfo.collider != null && boxCastInfo.hitInfo.collider.gameObject != null)
+        {
+            GameObject gameObjectNearby = boxCastInfo.hitInfo.collider.gameObject;
+            interactable = boxCastInfo.hitInfo.collider.gameObject.GetComponent<IInteractable>();
+            interactableGO = boxCastInfo.hitInfo.collider.gameObject;
+        }
 
-        Gizmos.color = Color.white;
-        float halfFOV = totalFOV / 2.0f;
-        Quaternion leftRayRotation = Quaternion.AngleAxis(-halfFOV, Vector3.up);
-        Quaternion rightRayRotation = Quaternion.AngleAxis(halfFOV, Vector3.up);
-        Vector3 leftRayDirection = leftRayRotation * cameraTransform.forward;
-        Vector3 rightRayDirection = rightRayRotation * cameraTransform.forward;
-        Gizmos.DrawRay(cameraTransform.position, leftRayDirection * (interactionRadius * 2 + (Vector3.Distance(cameraTransform.position, transform.position))));
-        Gizmos.DrawRay(cameraTransform.position, rightRayDirection * (interactionRadius * 2 + (Vector3.Distance(cameraTransform.position, transform.position))));
+        return interactable;
     }
 
-    public void OnEnable()
+    private BoxCastInfo FireAndGetBoxCastInfo()
     {
-        
+        BoxCastInfo boxCastInfo = new BoxCastInfo();
+        RaycastHit[] hitInfos = Physics.BoxCastAll(transform.position, interactionBoxSize / 2, Vector3.forward,
+            Quaternion.identity, 0, whatIsInteractable);
+        if (hitInfos != null && hitInfos.Length > 0)
+        {
+            boxCastInfo.hit = true;
+            boxCastInfo.hitInfo = hitInfos[0];
+        }
+        return boxCastInfo;
     }
 
-    public void OnDisable()
+    private void OnDrawGizmos()
     {
-        
+        if (!debugMode)
+        {
+            return;
+        }
+        Gizmos.DrawWireCube(transform.position, interactionBoxSize);
     }
+}
+
+public class BoxCastInfo
+{
+    public bool hit;
+    public RaycastHit hitInfo;
 }
