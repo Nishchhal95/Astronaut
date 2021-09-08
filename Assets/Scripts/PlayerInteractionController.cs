@@ -5,74 +5,34 @@ using UnityEngine;
 
 public class PlayerInteractionController : MonoBehaviour
 {
-    [SerializeField] private Vector3 interactionBoxSize = new Vector3(3, 3, 3);
-    [SerializeField] private bool debugMode = false;
+    [SerializeField] private float interactionRadius = 5f;
+    [SerializeField] private SphereCollider interactionCollider;
     [SerializeField] private LayerMask whatIsInteractable;
-    [SerializeField] private GameObject interactableGO;
-    [SerializeField] private IInteractable interactable;
-    [SerializeField] private IInteractable lastInteractable;
-    [SerializeField] private string interactionKey = "Q";
 
-    private void Update()
+    private void Awake()
     {
-        CheckAndUpdateNearbyInteractable();
+        interactionCollider.radius = interactionRadius;
     }
 
-    private void CheckAndUpdateNearbyInteractable()
+    private void OnTriggerEnter(Collider other)
     {
-        if(interactable == null)
+        if (whatIsInteractable == (whatIsInteractable | (1 << other.gameObject.layer)))
         {
-            lastInteractable = interactable;
-            InteractableToolTipManager.onInteractableOutOfRange?.Invoke();
-        }
-        interactable = GetInteractableNearby();
-        //Debug.Log("Interactable " + (interactable == null ? " NULL " : "SOMETHING"));
-
-        if(interactable != null && interactable != lastInteractable)
-        {
-            InteractableToolTipManager.onInteractableInRange?.Invoke(interactableGO, interactionKey);
+            if(other.gameObject.TryGetComponent(out Interactable interactable))
+            {
+                interactable.OnPlayerEnterInteractionZone();
+            }
         }
     }
 
-    private IInteractable GetInteractableNearby()
+    private void OnTriggerExit(Collider other)
     {
-        IInteractable interactable = null;
-        BoxCastInfo boxCastInfo = FireAndGetBoxCastInfo();
-        if (boxCastInfo.hit && boxCastInfo.hitInfo.collider != null && boxCastInfo.hitInfo.collider.gameObject != null)
+        if (whatIsInteractable == (whatIsInteractable | (1 << other.gameObject.layer)))
         {
-            GameObject gameObjectNearby = boxCastInfo.hitInfo.collider.gameObject;
-            interactable = boxCastInfo.hitInfo.collider.gameObject.GetComponent<IInteractable>();
-            interactableGO = boxCastInfo.hitInfo.collider.gameObject;
+            if (other.gameObject.TryGetComponent(out Interactable interactable))
+            {
+                interactable.OnPlayerExitInteractionZone();
+            }
         }
-
-        return interactable;
     }
-
-    private BoxCastInfo FireAndGetBoxCastInfo()
-    {
-        BoxCastInfo boxCastInfo = new BoxCastInfo();
-        RaycastHit[] hitInfos = Physics.BoxCastAll(transform.position, interactionBoxSize / 2, Vector3.forward,
-            Quaternion.identity, 0, whatIsInteractable);
-        if (hitInfos != null && hitInfos.Length > 0)
-        {
-            boxCastInfo.hit = true;
-            boxCastInfo.hitInfo = hitInfos[0];
-        }
-        return boxCastInfo;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!debugMode)
-        {
-            return;
-        }
-        Gizmos.DrawWireCube(transform.position, interactionBoxSize);
-    }
-}
-
-public class BoxCastInfo
-{
-    public bool hit;
-    public RaycastHit hitInfo;
 }

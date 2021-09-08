@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestInteractable : MonoBehaviour, IInteractable
+public class TestInteractable : Interactable
 {
-    public void Interact()
+    public override void Interact()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Interacted with " + this.name);
     }
 }

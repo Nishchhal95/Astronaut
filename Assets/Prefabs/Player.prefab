@@ -67,25 +67,6 @@ MonoBehaviour:
   jump: 0
   currentTimeout: 0.2
   timeOut: 0.2
---- !u!114 &2515623592421028095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2384635099529436364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4364ec84c2146046ad802bf646a4e66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionBoxSize: {x: 3, y: 3, z: 3}
-  debugMode: 0
-  whatIsInteractable:
-    serializedVersion: 2
-    m_Bits: 64
-  interactableGO: {fileID: 0}
-  interactionKey: Q
 --- !u!1 &8724777394513567389
 GameObject:
   m_ObjectHideFlags: 0
