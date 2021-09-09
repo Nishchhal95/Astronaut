@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
@@ -13,6 +14,8 @@ namespace StarterAssets
 		public bool jump;
 		public bool sprint;
 		public bool gravityToggle;
+
+		public static Action onInteractClick;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -50,6 +53,11 @@ namespace StarterAssets
 		public void OnGravityToggle(InputValue value)
         {
 			GravityToggleInput(value.isPressed);
+        }
+
+		public void OnInteract(InputValue value)
+        {
+			onInteractClick?.Invoke();
         }
 #else
 	// old input sys if we do decide to have it (most likely wont)...
