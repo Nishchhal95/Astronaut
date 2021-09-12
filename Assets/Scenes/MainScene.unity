@@ -2927,6 +2927,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2384635099529436364, guid: 44277556aabee5246ae4e83986222e85, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4508387881580043174, guid: 44277556aabee5246ae4e83986222e85, type: 3}
       propertyPath: playerCameraTransform
       value: 

@@ -15,7 +15,7 @@ namespace StarterAssets
 		public bool sprint;
 		public bool gravityToggle;
 
-		public static Action onInteractClick;
+		public static Action onInteractClick, onCastSpell1Click;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -58,6 +58,11 @@ namespace StarterAssets
 		public void OnInteract(InputValue value)
         {
 			onInteractClick?.Invoke();
+        }
+
+		public void OnCastSpell1(InputValue value)
+        {
+			onCastSpell1Click?.Invoke();
         }
 #else
 	// old input sys if we do decide to have it (most likely wont)...

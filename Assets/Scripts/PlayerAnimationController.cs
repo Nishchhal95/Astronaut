@@ -13,6 +13,7 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] private bool jump = false;
     [SerializeField] private float currentTimeout = 0.2f;
     [SerializeField] private float timeOut = 0.2f;
+    [SerializeField] private Shield shield;
 
     // animation IDs
     private int _animIDSpeed;
@@ -21,12 +22,24 @@ public class PlayerAnimationController : MonoBehaviour
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
     private int _animIDIsMoving;
+    private int _animIDCastSpell1;
+
+    private void OnEnable()
+    {
+        StarterAssetsInputs.onCastSpell1Click += OnMakeShield;
+    }
+
+    private void OnDisable()
+    {
+        StarterAssetsInputs.onCastSpell1Click -= OnMakeShield;
+    }
 
     private void Start()
     {
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         thirdPersonController = GetComponent<ThirdPersonController>();
         m_Animator = GetComponentInChildren<Animator>();
+        shield = GetComponentInChildren<Shield>();
 
         SetupAnimationIds();
     }
@@ -39,6 +52,7 @@ public class PlayerAnimationController : MonoBehaviour
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         _animIDIsMoving = Animator.StringToHash("IsMoving");
+        _animIDCastSpell1 = Animator.StringToHash("CastSpell1");
     }
 
     private void Update()
@@ -99,5 +113,14 @@ public class PlayerAnimationController : MonoBehaviour
         Debug.Log("JUMP");
         jump = true;
         m_Animator.SetBool(_animIDJump, jump);
+    }
+
+    private void OnMakeShield()
+    {
+        if (shield.shieldOn)
+        {
+            return;
+        }
+        m_Animator.SetTrigger(_animIDCastSpell1);
     }
 }
