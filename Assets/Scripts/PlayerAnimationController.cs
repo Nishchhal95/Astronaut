@@ -20,6 +20,7 @@ public class PlayerAnimationController : MonoBehaviour
     private int _animIDJump;
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
+    private int _animIDIsMoving;
 
     private void Start()
     {
@@ -37,6 +38,7 @@ public class PlayerAnimationController : MonoBehaviour
         _animIDJump = Animator.StringToHash("Jump");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        _animIDIsMoving = Animator.StringToHash("IsMoving");
     }
 
     private void Update()
@@ -53,12 +55,27 @@ public class PlayerAnimationController : MonoBehaviour
     {
         bool sprint = starterAssetsInputs.sprint;
         Vector2 velocity = starterAssetsInputs.move;
-        float speed = Mathf.Abs(velocity.x) >= Mathf.Abs(velocity.y) ? Mathf.Abs(velocity.x) : Mathf.Abs(velocity.y);
-        speed = Mathf.Clamp(speed, 0, 0.5f);
-        
-        if(sprint && (velocity.x != 0 || velocity.y != 0))
+        bool isMoving = velocity.magnitude > 0;
+        float speed = Mathf.Max(Mathf.Abs(velocity.x), Mathf.Abs(velocity.y));
+
+        m_Animator.SetBool(_animIDIsMoving, isMoving);
+
+        if (isMoving)
         {
-            speed = 1;
+            if (sprint)
+            {
+                speed = speed.Remap(0f, 1f, 0.5f, 1f);
+            }
+
+            else
+            {
+                speed = Mathf.Clamp(speed, 0, 0.5f);
+            }
+        }
+
+        else
+        {
+            speed = 0;
         }
 
         m_Animator.SetFloat(_animIDSpeed, speed);
